@@ -1,0 +1,11 @@
+# Backend
+backend/target/
+*.log
+*.class
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
