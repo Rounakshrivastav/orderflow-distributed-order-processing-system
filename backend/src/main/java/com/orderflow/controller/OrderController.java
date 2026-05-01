@@ -22,4 +22,9 @@ public class OrderController {
    public OrderResponseDTO getOrder(@PathVariable Long id) {
     return orderService.getOrderById(id);
 }
+
+@PutMapping("/{id}")
+public OrderResponseDTO updateOrder(@PathVariable Long id, @RequestBody OrderRequestDTO request) {
+    return orderService.updateOrder(id, request);
+}
 }
