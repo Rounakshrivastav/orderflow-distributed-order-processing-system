@@ -3,6 +3,7 @@ package com.orderflow.service;
 import com.orderflow.dto.OrderRequestDTO;
 import com.orderflow.dto.OrderResponseDTO;
 import com.orderflow.entity.Order;
+import com.orderflow.exception.OrderNotFoundException;
 import com.orderflow.kafka.event.OrderEvent;
 import com.orderflow.kafka.producer.OrderProducer;
 import com.orderflow.repository.OrderRepository;
@@ -40,14 +41,14 @@ public class OrderService {
 
         return orderRepository.findById(id)
                 .map(order -> new OrderResponseDTO(order.getId(), order.getStatus()))
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() -> new OrderNotFoundException("Order not found "));
     }
 
     @CacheEvict(value = "orders", key = "#id")
     public OrderResponseDTO updateOrder(Long id, OrderRequestDTO request) {
 
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() -> new OrderNotFoundException("Order not found "));
 
         order.setStatus(request.getStatus());
 
