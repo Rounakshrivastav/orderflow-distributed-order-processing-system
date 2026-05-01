@@ -4,6 +4,16 @@ A production-style backend system that simulates order processing with a focus o
 This project is built to practice system design concepts and backend engineering using modern technologies.
 
 
+## Architecture
+
+- REST APIs using Spring Boot
+- PostgreSQL for persistence
+- Redis for caching
+- Kafka for asynchronous processing
+- Retry mechanism for fault tolerance
+- Dead Letter Queue for failure handling
+
+
 ## Tech Stack
 
 - Java 21
