@@ -43,3 +43,20 @@ input {
     border-radius: 5px;
     border: 1px solid #ccc;
 }
+
+table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+th {
+    background-color: #4a90e2;
+    color: white;
+}

@@ -11,4 +11,5 @@ public class OrderRequestDTO {
     private Long productId;
     private Integer quantity;
     private OrderStatus status;
+    private String requestId;
 }

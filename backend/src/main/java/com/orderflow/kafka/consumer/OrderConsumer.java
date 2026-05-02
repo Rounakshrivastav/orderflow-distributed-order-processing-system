@@ -26,7 +26,7 @@ public class OrderConsumer {
 
     @KafkaListener(topics = "order-events", groupId = "order-group")
     public void consume(OrderEvent event) {
-
+        Order order = new Order();
         try {
 
             // if (event.getOrderId() % 2 == 0) {
@@ -35,20 +35,26 @@ public class OrderConsumer {
 
             log.info("Processing order: {}", event);
 
-            Order order = orderRepository.findById(event.getOrderId())
+            order = orderRepository.findById(event.getOrderId())
                     .orElseThrow(() -> new OrderNotFoundException("Order not found "));
 
-            // simulate processing
+            // simulate failure
+            // if (event.getOrderId() % 2 == 0) {
+            // order.setStatus(OrderStatus.FAILED);
+            // orderRepository.save(order);
+            // cacheManager.getCache("orders").evict(event.getOrderId());
+            // throw new RuntimeException("Simulated failure");
+            // }
+
+            // processing
+            Order orderCheck = orderRepository.findById(event.getOrderId())
+                    .orElseThrow(() -> new RuntimeException("Order not found"));
+
+            if (orderCheck.getQuantity() > 50) {
+                throw new RuntimeException("Stock not available");
+            }
             order.setStatus(OrderStatus.PROCESSING);
             orderRepository.save(order);
-
-            // simulate failure
-            if (event.getOrderId() % 2 == 0) {
-            order.setStatus(OrderStatus.FAILED);
-            orderRepository.save(order);
-            cacheManager.getCache("orders").evict(event.getOrderId());
-            throw new RuntimeException("Simulated failure");
-            }
 
             // success
             order.setStatus(OrderStatus.COMPLETED);
@@ -59,9 +65,12 @@ public class OrderConsumer {
 
             log.info("Order completed: {}", order.getId());
         } catch (Exception e) {
-
             log.error("Error processing order: {}", event);
+            order.setStatus(OrderStatus.FAILED);
             throw e; // for retry
+
+        } finally {
+            orderRepository.save(order);
         }
     }
 

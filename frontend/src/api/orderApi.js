@@ -9,3 +9,11 @@ export const createOrder = (data) => {
 export const getOrderById = (id) => {
     return axios.get(`${BASE_URL}/${id}`);
 };
+
+export const getAllOrders = () => {
+  return axios.get(BASE_URL);
+};
+
+export const getOrdersByUser = (userId) => {
+  return axios.get(`${BASE_URL}/user/${userId}`);
+};

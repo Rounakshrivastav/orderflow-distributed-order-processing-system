@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createOrder, getOrderById } from "../api/orderApi";
+import { createOrder, getOrderById, getAllOrders, getOrdersByUser } from "../api/orderApi";
 import { useEffect } from "react";
 
 function OrderPage() {
@@ -12,6 +12,8 @@ function OrderPage() {
     const [productId, setProductId] = useState("");
     const [quantity, setQuantity] = useState("");
 
+    const [orders, setOrders] = useState([]);
+
 
 
     const handleCreate = async () => {
@@ -19,10 +21,14 @@ function OrderPage() {
 
         if (!userId || !productId || !quantity) {
             alert("Please fill all fields");
+             setLoading(false);
             return;
         }
+        const requestId = crypto.randomUUID();
+       // const requestId = "test-123";
 
         const res = await createOrder({
+            requestId,
             userId: Number(userId),
             productId: Number(productId),
             quantity: Number(quantity)
@@ -39,6 +45,26 @@ function OrderPage() {
 
         const res = await getOrderById(orderId);
         setStatus(res.data.status);
+    };
+
+    const handleGetByUser = async () => {
+
+        if (!userId) {
+            alert("Enter userId first");
+            return;
+        }
+
+        try {
+            const res = await getOrdersByUser(userId);
+            setOrders(res.data);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const handleGetAll = async () => {
+        const res = await getAllOrders();
+        setOrders(res.data);
     };
 
     useEffect(() => {
@@ -94,6 +120,12 @@ function OrderPage() {
             <button onClick={handleFetch} disabled={!orderId}>
                 Check Status
             </button>
+            <button onClick={handleGetByUser}>
+                View My Orders
+            </button>
+            <button onClick={handleGetAll}>
+                View All Orders
+            </button>
 
             {orderId && (
                 <div className="status">
@@ -101,10 +133,34 @@ function OrderPage() {
                     <p style={{ color: getColor() }}>Status: {status}</p>
                 </div>
             )}
+
+            {orders.length > 0 && (
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>User</th>
+                            <th>Product</th>
+                            <th>Qty</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {orders.map((o) => (
+                            <tr key={o.id}>
+                                <td>{o.id}</td>
+                                <td>{o.userId}</td>
+                                <td>{o.productId}</td>
+                                <td>{o.quantity}</td>
+                                <td>{o.status}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            )}
         </div>
     );
 }
-
 
 
 const getColor = () => {

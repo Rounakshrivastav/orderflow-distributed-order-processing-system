@@ -15,6 +15,8 @@ public class Order {
     private Long userId;
     private Long productId;
     private Integer quantity;
+    @Column(unique = true)
+    private String requestId;
     // private String status;
 
     @Enumerated(EnumType.STRING)

@@ -9,8 +9,8 @@ import com.orderflow.kafka.event.OrderEvent;
 import com.orderflow.kafka.producer.OrderProducer;
 import com.orderflow.repository.OrderRepository;
 
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -28,18 +28,33 @@ public class OrderService {
 
     public OrderResponseDTO createOrder(OrderRequestDTO request) {
 
+        Optional<Order> existing = orderRepository.findByRequestId(request.getRequestId());
+
+        if (existing.isPresent()) {
+            return mapToDTO(existing.get());
+        }
+
         Order order = new Order();
 
         order.setUserId(request.getUserId());
         order.setProductId(request.getProductId());
         order.setQuantity(request.getQuantity());
         order.setStatus(OrderStatus.CREATED);
+        order.setRequestId(request.getRequestId());
 
         Order savedOrder = orderRepository.save(order);
         orderProducer.sendOrderEvent(
                 new OrderEvent(order.getId(), order.getStatus()));
 
         return new OrderResponseDTO(savedOrder.getId(), savedOrder.getStatus());
+    }
+
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
+    }
+
+    public List<Order> getOrdersByUser(Long userId) {
+        return orderRepository.findByUserId(userId);
     }
 
     @Cacheable(value = "orders", key = "#id")
@@ -62,4 +77,11 @@ public class OrderService {
 
         return new OrderResponseDTO(updatedOrder.getId(), updatedOrder.getStatus());
     }
+
+    private OrderResponseDTO mapToDTO(Order order) {
+    OrderResponseDTO dto = new OrderResponseDTO();
+    dto.setOrderId(order.getId());
+    dto.setStatus(order.getStatus());
+    return dto;
+}
 }
