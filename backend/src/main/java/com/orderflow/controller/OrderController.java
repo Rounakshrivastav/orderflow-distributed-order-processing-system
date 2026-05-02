@@ -5,7 +5,7 @@ import com.orderflow.dto.OrderResponseDTO;
 import com.orderflow.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/orders")
 public class OrderController {
