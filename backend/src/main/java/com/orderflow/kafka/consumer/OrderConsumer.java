@@ -3,6 +3,7 @@ package com.orderflow.kafka.consumer;
 import com.orderflow.kafka.event.OrderEvent;
 import com.orderflow.repository.OrderRepository;
 import com.orderflow.entity.Order;
+import com.orderflow.entity.OrderStatus;
 import com.orderflow.exception.OrderNotFoundException;
 
 import org.slf4j.Logger;
@@ -38,7 +39,19 @@ public class OrderConsumer {
                     .orElseThrow(() -> new OrderNotFoundException("Order not found "));
 
             // simulate processing
-            order.setStatus("COMPLETED");
+            order.setStatus(OrderStatus.PROCESSING);
+            orderRepository.save(order);
+
+            // simulate failure
+            if (event.getOrderId() % 2 == 0) {
+            order.setStatus(OrderStatus.FAILED);
+            orderRepository.save(order);
+            cacheManager.getCache("orders").evict(event.getOrderId());
+            throw new RuntimeException("Simulated failure");
+            }
+
+            // success
+            order.setStatus(OrderStatus.COMPLETED);
             orderRepository.save(order);
 
             // evict cache after update

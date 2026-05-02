@@ -1,11 +1,42 @@
-# Backend
-backend/target/
-*.log
-*.class
-
-# IDE
-.vscode/
-.idea/
-
-# OS
+# ======================
+# GENERAL
+# ======================
 .DS_Store
+Thumbs.db
+
+# ======================
+# JAVA / SPRING BOOT
+# ======================
+/backend/target/
+*.log
+
+# Maven wrapper logs
+/backend/.mvn/wrapper/maven-wrapper.jar
+
+# IntelliJ / VSCode
+/backend/.idea/
+/backend/*.iml
+.vscode/
+
+# ======================
+# ENV FILES (IMPORTANT)
+# ======================
+.env
+.env.*
+
+# ======================
+# FRONTEND (React / Vite)
+# ======================
+/frontend/node_modules/
+/frontend/dist/
+
+# logs
+/frontend/npm-debug.log*
+/frontend/yarn-debug.log*
+/frontend/yarn-error.log*
+
+# ======================
+# OS FILES
+# ======================
+*.swp
+*.swo

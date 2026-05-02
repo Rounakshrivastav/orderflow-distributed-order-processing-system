@@ -3,10 +3,15 @@ package com.orderflow.service;
 import com.orderflow.dto.OrderRequestDTO;
 import com.orderflow.dto.OrderResponseDTO;
 import com.orderflow.entity.Order;
+import com.orderflow.entity.OrderStatus;
 import com.orderflow.exception.OrderNotFoundException;
 import com.orderflow.kafka.event.OrderEvent;
 import com.orderflow.kafka.producer.OrderProducer;
 import com.orderflow.repository.OrderRepository;
+
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -24,10 +29,11 @@ public class OrderService {
     public OrderResponseDTO createOrder(OrderRequestDTO request) {
 
         Order order = new Order();
+
         order.setUserId(request.getUserId());
         order.setProductId(request.getProductId());
         order.setQuantity(request.getQuantity());
-        order.setStatus("CREATED");
+        order.setStatus(OrderStatus.CREATED);
 
         Order savedOrder = orderRepository.save(order);
         orderProducer.sendOrderEvent(
